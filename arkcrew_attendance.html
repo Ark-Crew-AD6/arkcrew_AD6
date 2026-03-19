@@ -331,6 +331,9 @@
 
   <!-- 크루 선택 -->
   <div class="section-title">크루 선택</div>
+  <div id="loading-msg" style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">
+    <span class="spinner" style="display:inline-block"></span> 명단 불러오는 중...
+  </div>
   <div class="crew-grid" id="crew-grid"></div>
 
   <!-- 멤버 리스트 -->
@@ -349,63 +352,47 @@
     <div class="done-icon">✅</div>
     <h2>제출 완료!</h2>
     <p id="done-msg">구글 시트에 자동으로 저장되었습니다.</p>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:28px;">
-      <button class="submit-btn" onclick="editSubmission()" style="font-size:14px;padding:13px;">✏️ 수정하기</button>
-    </div>
+    <p style="color:var(--muted);font-size:13px;margin-top:12px;">다시 제출하려면 페이지를 새로고침 해주세요 🔄</p>
   </div>
 
 </div>
 
 <script>
 // ================================================================
-// ⚙️ 설정 영역 - 여기만 수정하세요!
+// ⚙️ 설정 - SCRIPT_URL만 수정하세요! 이름은 구글 시트에서 관리
 // ================================================================
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyurRF841paCxlBjqjirpZys3cgiX3X9qVrc7jQ5IvBWFcMw6jTTwEQZHV0Z7u4cj69/exec";
-
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKKzE5zTajuDp3_yqcFyWI1RRPooq6ZQ237kXdJ1WkTiuaPvAzFPHlW8efp3Yuv1Rr/exec";
 const WEEKS = ["1주차","2주차","3주차","4주차","5주차","6주차","7주차","8주차","9주차","10주차"];
-
-// 크루별 멤버 명단 (간사는 isManager: true)
-const CREWS = {
-  "1크루":  { members: [{name:"김민준", isManager:true},{name:"이서연"},{name:"박지호"},{name:"최수아"}] },
-  "2크루":  { members: [{name:"이동현", isManager:true},{name:"정유진"},{name:"한승우"},{name:"오채원"}] },
-  "3크루":  { members: [{name:"박서준", isManager:true},{name:"김나은"},{name:"윤도현"},{name:"임지수"}] },
-  "4크루":  { members: [{name:"최현우", isManager:true},{name:"강민서"},{name:"조은혜"},{name:"신재원"}] },
-  "5크루":  { members: [{name:"정수빈", isManager:true},{name:"류하은"},{name:"남기현"},{name:"백지원"}] },
-  "6크루":  { members: [{name:"장인애", isManager:true},{name:"김재은"},{name:"강지원"},{name:"김세민"},{name:"한진"}] },
-  "7크루":  { members: [{name:"오민석", isManager:true},{name:"황소연"},{name:"권태양"},{name:"문예린"}] },
-  "8크루":  { members: [{name:"송지안", isManager:true},{name:"안준혁"},{name:"유다은"},{name:"홍성민"}] },
-  "9크루":  { members: [{name:"김경미", isManager:true},{name:"김원근", isManager:true},{name:"박상명"},{name:"오영선"},{name:"오양실"},{name:"김지연"},{name:"곽경미"}] },
-  "10크루": { members: [{name:"임성준", isManager:true},{name:"한성호", isManager:true},{name:"김성경"},{name:"김준기"},{name:"이윤수"},{name:"이기원"}] },
-  "11크루": { members: [{name:"전민재", isManager:true},{name:"이하늘"},{name:"김도윤"},{name:"박소희"}] },
-  "12크루": { members: [{name:"차은우", isManager:true},{name:"서지현"},{name:"노준영"},{name:"마유진"}] },
-  "13크루": { members: [{name:"진하준", isManager:true},{name:"배나리"},{name:"허성훈"},{name:"고아름"}] },
-  "14크루": { members: [{name:"태민호", isManager:true},{name:"라윤아"},{name:"변재현"},{name:"석지민"}] },
-  "15크루": { members: [{name:"방세진", isManager:true},{name:"감나래"},{name:"엄태준"},{name:"음채희"}] },
-  "16크루": { members: [{name:"이동호", isManager:true},{name:"김민선", isManager:true},{name:"노건호"},{name:"이아현"},{name:"이예린"},{name:"이예지"}] },
-  "17크루": { members: [{name:"채준서", isManager:true},{name:"편소율"},{name:"탁승현"},{name:"봉다인"}] },
-  "18크루": { members: [{name:"임이레", isManager:true},{name:"명지아"},{name:"봉준혁"},{name:"소예진"}] },
-  "19크루": { members: [{name:"구지은", isManager:true},{name:"박예림", isManager:true},{name:"김효선"},{name:"박지윤"},{name:"심유진"},{name:"이혜인"},{name:"정유진"}] },
-  "20크루": { members: [{name:"표나현", isManager:true},{name:"가준모"},{name:"나소희"},{name:"다인혁"}] },
-  "21크루": { members: [{name:"하은진", isManager:true},{name:"파란별"},{name:"아침이"},{name:"이슬비"}] },
-  "22크루": { members: [{name:"강태오", isManager:true},{name:"도레미"},{name:"솔라온"},{name:"라이언"}] },
-  "23크루": { members: [{name:"신온유", isManager:true},{name:"주하람"},{name:"지온결"},{name:"산들이"}] },
-  "24크루": { members: [{name:"민새벽", isManager:true},{name:"해오름"},{name:"별하나"},{name:"빛가온"}] },
-  "25크루": { members: [{name:"온누리", isManager:true},{name:"하늘빛"},{name:"푸르름"},{name:"초록잎"}] },
-  "26크루": { members: [{name:"이새봄", isManager:true},{name:"김여름"},{name:"박가을"},{name:"최겨울"}] },
-  "27크루": { members: [{name:"정동녘", isManager:true},{name:"류서녘"},{name:"엄남녘"},{name:"임북녘"}] },
-  "28크루": { members: [{name:"조다온", isManager:true},{name:"고나온"},{name:"문라온"},{name:"배마온"}] },
-  "29크루": { members: [{name:"한가람", isManager:true},{name:"이누리"},{name:"김보람"},{name:"오슬기"}] },
-  "30크루": { members: [{name:"윤다솜", isManager:true},{name:"장바람"},{name:"석노을"},{name:"천여울"}] },
-};
 // ================================================================
 
 let selectedWeek = "";
 let selectedCrew = "";
-let memberStatuses = {}; // {이름: {status, reason}}
+let memberStatuses = {};
+let CREWS = {}; // 구글 시트에서 불러옴
 
-// 주차 버튼 생성
+// ── 앱 초기화: 명단 먼저 로드 ──
+async function init() {
+  showLoading(true);
+  try {
+    const res = await fetch(SCRIPT_URL + "?action=getMembers");
+    const data = await res.json();
+    CREWS = data.crews; // { "1크루": [{name, isManager}, ...], ... }
+    initWeeks();
+    initCrews();
+  } catch (err) {
+    document.getElementById("crew-grid").innerHTML =
+      '<p style="color:#ef4444;font-size:13px;padding:10px;">명단을 불러오지 못했어요.<br>SCRIPT_URL을 확인해주세요.</p>';
+  }
+  showLoading(false);
+}
+
+function showLoading(on) {
+  document.getElementById("loading-msg").style.display = on ? "block" : "none";
+}
+
 function initWeeks() {
   const bar = document.getElementById("week-bar");
+  bar.innerHTML = "";
   WEEKS.forEach(w => {
     const btn = document.createElement("button");
     btn.className = "week-btn";
@@ -421,10 +408,10 @@ function selectWeek(week) {
   updateHeader();
 }
 
-// 크루 버튼 생성
 function initCrews() {
   const grid = document.getElementById("crew-grid");
-  Object.keys(CREWS).forEach(crew => {
+  grid.innerHTML = "";
+  Object.keys(CREWS).sort((a,b) => parseInt(a) - parseInt(b)).forEach(crew => {
     const btn = document.createElement("button");
     btn.className = "crew-btn";
     btn.textContent = crew;
@@ -434,10 +421,7 @@ function initCrews() {
 }
 
 function selectCrew(crew) {
-  if (!selectedWeek) {
-    alert("먼저 주차를 선택해주세요!");
-    return;
-  }
+  if (!selectedWeek) { alert("먼저 주차를 선택해주세요!"); return; }
   selectedCrew = crew;
   memberStatuses = {};
   document.querySelectorAll(".crew-btn").forEach(b => b.classList.toggle("active", b.textContent === crew));
@@ -455,20 +439,15 @@ function updateHeader() {
 function renderMembers(crew) {
   const section = document.getElementById("member-section");
   const list = document.getElementById("member-list");
-  const title = document.getElementById("member-section-title");
-
+  document.getElementById("member-section-title").textContent = `${crew} 멤버 참석 현황`;
   section.style.display = "block";
-  title.textContent = `${crew} 멤버 참석 현황`;
   list.innerHTML = "";
   document.getElementById("done-screen").style.display = "none";
 
-  const members = CREWS[crew].members;
-  members.forEach(m => {
+  (CREWS[crew] || []).forEach(m => {
     memberStatuses[m.name] = { status: "", reason: "" };
-    const card = createMemberCard(m);
-    list.appendChild(card);
+    list.appendChild(createMemberCard(m));
   });
-
   updateProgress();
 }
 
@@ -476,12 +455,10 @@ function createMemberCard(member) {
   const card = document.createElement("div");
   card.className = "member-card";
   card.id = `card-${member.name}`;
-
-  const managerBadge = member.isManager ? `<span class="badge badge-manager">간사</span>` : "";
-
+  const badge = member.isManager ? `<span class="badge badge-manager">간사</span>` : "";
   card.innerHTML = `
     <div class="member-top">
-      <div class="member-name">${member.name}${managerBadge}</div>
+      <div class="member-name">${member.name}${badge}</div>
       <div class="status-btns">
         <button class="status-btn" onclick="setStatus('${member.name}', 'attend', this)">참석</button>
         <button class="status-btn" onclick="setStatus('${member.name}', 'absent', this)">불참</button>
@@ -489,26 +466,18 @@ function createMemberCard(member) {
       </div>
     </div>
     <div class="reason-box" id="reason-${member.name}">
-      <input class="reason-input" id="input-${member.name}" type="text" placeholder="사유 / 도착 예정 시간 입력" 
+      <input class="reason-input" id="input-${member.name}" type="text"
         oninput="setReason('${member.name}', this.value)">
-    </div>
-  `;
+    </div>`;
   return card;
 }
 
 function setStatus(name, status, btn) {
   memberStatuses[name].status = status;
-
   const card = document.getElementById(`card-${name}`);
   card.className = `member-card ${status}`;
-
-  // 버튼 스타일
-  btn.parentElement.querySelectorAll(".status-btn").forEach(b => {
-    b.className = "status-btn";
-  });
+  btn.parentElement.querySelectorAll(".status-btn").forEach(b => b.className = "status-btn");
   btn.classList.add(`sel-${status}`);
-
-  // 사유 입력창
   const reasonBox = document.getElementById(`reason-${name}`);
   if (status === "absent" || status === "late") {
     reasonBox.classList.add("show");
@@ -518,124 +487,53 @@ function setStatus(name, status, btn) {
     reasonBox.classList.remove("show");
     memberStatuses[name].reason = "";
   }
-
   updateProgress();
 }
 
-function setReason(name, value) {
-  memberStatuses[name].reason = value;
-}
+function setReason(name, value) { memberStatuses[name].reason = value; }
 
 function updateProgress() {
   const total = Object.keys(memberStatuses).length;
   const done = Object.values(memberStatuses).filter(s => s.status !== "").length;
-  const pct = total ? (done / total * 100) : 0;
-  document.getElementById("progress-fill").style.width = pct + "%";
+  document.getElementById("progress-fill").style.width = (total ? done / total * 100 : 0) + "%";
 }
 
-async function submitData(isEdit = false) {
-  if (!selectedWeek || !selectedCrew) {
-    alert("주차와 크루를 선택해주세요!");
-    return;
-  }
-
+async function submitData() {
+  if (!selectedWeek || !selectedCrew) { alert("주차와 크루를 선택해주세요!"); return; }
   const incomplete = Object.entries(memberStatuses).filter(([_, s]) => s.status === "");
   if (incomplete.length > 0) {
     const names = incomplete.map(([n]) => n).join(", ");
-    if (!confirm(`아직 선택 안 된 멤버가 있어요:\n${names}\n\n그래도 제출하시겠어요?`)) return;
+    if (!confirm(`아직 선택 안 된 멤버:\n${names}\n\n그래도 제출하시겠어요?`)) return;
   }
 
   const btn = document.getElementById("submit-btn");
   btn.disabled = true;
-  btn.innerHTML = `<span class="spinner"></span>${isEdit ? "수정 중..." : "제출 중..."}`;
+  btn.innerHTML = `<span class="spinner"></span>제출 중...`;
 
   const rows = Object.entries(memberStatuses).map(([name, s]) => ({
-    week: selectedWeek,
-    crew: selectedCrew,
-    name,
+    week: selectedWeek, crew: selectedCrew, name,
     status: s.status === "attend" ? "참석" : s.status === "absent" ? "불참" : s.status === "late" ? "늦참" : "",
     reason: s.reason
   }));
 
   try {
     await fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
+      method: "POST", mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crew: selectedCrew, week: selectedWeek, rows, isEdit })
+      body: JSON.stringify({ crew: selectedCrew, week: selectedWeek, rows })
     });
-
     document.getElementById("member-section").style.display = "none";
-    const done = document.getElementById("done-screen");
-    done.style.display = "block";
-    document.getElementById("done-screen").querySelector("h2").textContent = isEdit ? "수정 완료!" : "제출 완료!";
-    document.getElementById("done-screen").querySelector(".done-icon").textContent = isEdit ? "✏️" : "✅";
+    document.getElementById("done-screen").style.display = "block";
     document.getElementById("done-msg").textContent =
-      `${selectedWeek} ${selectedCrew} 참석 현황이 구글 시트에 ${isEdit ? "수정" : "저장"}되었습니다.`;
-
+      `${selectedWeek} ${selectedCrew} 참석 현황이 구글 시트에 저장되었습니다.`;
   } catch (err) {
     alert("오류가 발생했어요. 다시 시도해주세요.");
     btn.disabled = false;
-    btn.innerHTML = isEdit ? "수정 제출하기" : "제출하기";
+    btn.innerHTML = "제출하기";
   }
 }
 
-// 수정하기 - 기존 선택값 유지한 채 다시 편집 화면으로
-function editSubmission() {
-  document.getElementById("done-screen").style.display = "none";
-  const section = document.getElementById("member-section");
-  section.style.display = "block";
-
-  // 버튼을 "수정 제출하기"로 변경
-  const btn = document.getElementById("submit-btn");
-  btn.disabled = false;
-  btn.innerHTML = "✏️ 수정 제출하기";
-  btn.onclick = () => submitData(true);
-
-  // 기존 선택값 UI에 복원
-  Object.entries(memberStatuses).forEach(([name, s]) => {
-    if (!s.status) return;
-    const card = document.getElementById(`card-${name}`);
-    if (!card) return;
-    card.className = `member-card ${s.status}`;
-    const btns = card.querySelectorAll(".status-btn");
-    btns.forEach(b => {
-      b.className = "status-btn";
-      if (
-        (b.textContent === "참석" && s.status === "attend") ||
-        (b.textContent === "불참" && s.status === "absent") ||
-        (b.textContent === "늦참" && s.status === "late")
-      ) b.classList.add(`sel-${s.status}`);
-    });
-    if (s.status === "absent" || s.status === "late") {
-      document.getElementById(`reason-${name}`)?.classList.add("show");
-      const input = document.getElementById(`input-${name}`);
-      if (input) input.value = s.reason;
-    }
-  });
-
-  window.scrollTo(0, 0);
-}
-
-function resetAll() {
-  selectedCrew = "";
-  memberStatuses = {};
-  document.querySelectorAll(".crew-btn").forEach(b => b.classList.remove("active"));
-  document.getElementById("member-section").style.display = "none";
-  document.getElementById("done-screen").style.display = "none";
-
-  // 제출 버튼 원복
-  const btn = document.getElementById("submit-btn");
-  btn.disabled = false;
-  btn.innerHTML = "제출하기";
-  btn.onclick = () => submitData(false);
-
-  updateHeader();
-  window.scrollTo(0, 0);
-}
-
-initWeeks();
-initCrews();
+init();
 </script>
 </body>
 </html>
