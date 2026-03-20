@@ -317,7 +317,6 @@
     transition: width 0.3s;
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -394,7 +393,7 @@
 // ================================================================
 // ⚙️ 설정 - SCRIPT_URL만 수정하세요! 이름은 구글 시트에서 관리
 // ================================================================
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZ1JuPPsde00hL7U-LA1RmJRXhp6d_YslWQWeFWj4FNdpWvLhM8OBMNGWvyKP9Lt9Q/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLdtu4ny6LQY520VK135mT1sYgCEC9idJu8CQaWBOfr7dgszODDCCsd-2nV9UQezZr/exec";
 const WEEKS = ["1주차","2주차","3주차","4주차","5주차","6주차","7주차","8주차","9주차","10주차"];
 // ================================================================
 
@@ -408,14 +407,21 @@ let CREWS = {}; // 구글 시트에서 불러옴
 async function init() {
   showLoading(true);
   try {
-    const res = await fetch(SCRIPT_URL + "?action=getMembers");
+    if (!SCRIPT_URL || SCRIPT_URL.includes("여기에")) {
+      throw new Error("SCRIPT_URL을 설정해주세요");
+    }
+    const res = await fetch(SCRIPT_URL + "?action=getMembers", { cache: "no-cache" });
+    if (!res.ok) throw new Error("서버 응답 오류: " + res.status);
     const data = await res.json();
-    CREWS = data.crews; // { "1크루": [{name, isManager}, ...], ... }
+    if (!data.crews) throw new Error("명단 데이터 없음");
+    CREWS = data.crews;
     initWeeks();
     initCrews();
   } catch (err) {
+    console.error("명단 로드 실패:", err);
+    document.getElementById("loading-msg").style.display = "none";
     document.getElementById("crew-grid").innerHTML =
-      '<p style="color:#ef4444;font-size:13px;padding:10px;">명단을 불러오지 못했어요.<br>SCRIPT_URL을 확인해주세요.</p>';
+      '<p style="color:#ef4444;font-size:13px;padding:10px;">⚠️ 명단을 불러오지 못했어요.<br>' + err.message + '<br><button onclick="init()" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;">다시 시도</button></p>';
   }
   showLoading(false);
 }
@@ -633,18 +639,29 @@ function copyResult() {
   });
 }
 
-// ── 이미지 저장 ──
+// ── 이미지 저장 (html2canvas 동적 로딩) ──
 async function downloadImage() {
   const btn = event.target;
   btn.textContent = "⏳ 생성 중...";
   btn.disabled = true;
 
-  const target = document.getElementById("done-screen");
   try {
+    // html2canvas 동적 로딩 (페이지 로드에 영향 없음)
+    if (typeof html2canvas === "undefined") {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+    const target = document.getElementById("done-screen");
     const canvas = await html2canvas(target, {
       backgroundColor: "#0f1117",
       scale: 2,
-      useCORS: true
+      useCORS: true,
+      logging: false
     });
     const link = document.createElement("a");
     link.download = `${selectedWeek}_${selectedCrew}_참석현황.png`;
@@ -652,6 +669,7 @@ async function downloadImage() {
     link.click();
   } catch(e) {
     alert("이미지 생성 중 오류가 발생했어요.");
+    console.error(e);
   }
   btn.textContent = "🖼️ 이미지 저장";
   btn.disabled = false;
