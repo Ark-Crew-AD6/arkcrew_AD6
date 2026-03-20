@@ -317,6 +317,7 @@
     transition: width 0.3s;
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -353,7 +354,38 @@
     <div class="done-icon">✅</div>
     <h2>제출 완료!</h2>
     <p id="done-msg">구글 시트에 자동으로 저장되었습니다.</p>
-    <p style="color:var(--muted);font-size:13px;margin-top:12px;">다시 제출하려면 페이지를 새로고침 해주세요 🔄</p>
+    <p style="color:var(--muted);font-size:13px;margin-top:6px;">다시 제출하려면 페이지를 새로고침 해주세요 🔄</p>
+
+    <!-- 제출 내용 미리보기 -->
+    <div id="result-preview" style="
+      margin-top:20px;
+      background:var(--card2);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:16px;
+      text-align:left;
+      font-size:13px;
+      line-height:1.8;
+      white-space:pre-wrap;
+      word-break:break-all;
+      color:var(--text);
+    "></div>
+
+    <!-- 버튼 -->
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button onclick="copyResult()" style="
+        flex:1;padding:12px;border-radius:10px;
+        border:1px solid var(--border);background:var(--card);
+        color:var(--text);font-size:14px;font-family:'Noto Sans KR',sans-serif;
+        cursor:pointer;font-weight:600;
+      ">📋 복사</button>
+      <button onclick="downloadImage()" style="
+        flex:1;padding:12px;border-radius:10px;
+        border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));
+        color:white;font-size:14px;font-family:'Noto Sans KR',sans-serif;
+        cursor:pointer;font-weight:600;
+      ">🖼️ 이미지 저장</button>
+    </div>
   </div>
 
 </div>
@@ -541,6 +573,7 @@ async function submitData() {
     document.getElementById("done-screen").style.display = "block";
     document.getElementById("done-msg").textContent =
       `${selectedWeek} ${selectedCrew} 참석 현황이 구글 시트에 저장되었습니다.`;
+    renderResultPreview(rows);
   } catch (err) {
     alert("오류가 발생했어요. 다시 시도해주세요.");
     btn.disabled = false;
@@ -549,6 +582,80 @@ async function submitData() {
 }
 
 init();
+
+// ── 제출 결과 미리보기 ──
+function renderResultPreview(rows) {
+  const members = CREWS[selectedCrew] || [];
+  const statusMap = {};
+  rows.forEach(r => { statusMap[r.name] = r; });
+
+  const statusLabel = { "참석": "참석 ✅", "불참": "불참 ❌", "늦참": "늦참 ⏰", "": "미정 ❓" };
+  const statusEmoji = { "참석": "✅", "불참": "❌", "늦참": "⏰", "": "❓" };
+
+  let lines = [];
+  lines.push(`${selectedWeek} ${selectedCrew}`);
+  lines.push("─────────────────");
+
+  members.forEach(m => {
+    const s = statusMap[m.name] || {};
+    const status = s.status || "";
+    const reason = s.reason || "";
+    const role = m.isManager ? "[간사] " : m.isStaff ? "[스태프] " : "";
+    const reasonStr = reason ? ` (${reason})` : "";
+    lines.push(`${statusEmoji[status]} ${role}${m.name}  ${status || "미정"}${reasonStr}`);
+  });
+
+  document.getElementById("result-preview").textContent = lines.join("
+");
+  // 전역 저장 (복사/이미지용)
+  window._resultText = lines.join("
+");
+}
+
+// ── 텍스트 복사 ──
+function copyResult() {
+  if (!window._resultText) return;
+  navigator.clipboard.writeText(window._resultText).then(() => {
+    const btn = event.target;
+    btn.textContent = "✅ 복사됨!";
+    setTimeout(() => { btn.textContent = "📋 복사"; }, 2000);
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement("textarea");
+    ta.value = window._resultText;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    const btn = event.target;
+    btn.textContent = "✅ 복사됨!";
+    setTimeout(() => { btn.textContent = "📋 복사"; }, 2000);
+  });
+}
+
+// ── 이미지 저장 ──
+async function downloadImage() {
+  const btn = event.target;
+  btn.textContent = "⏳ 생성 중...";
+  btn.disabled = true;
+
+  const target = document.getElementById("done-screen");
+  try {
+    const canvas = await html2canvas(target, {
+      backgroundColor: "#0f1117",
+      scale: 2,
+      useCORS: true
+    });
+    const link = document.createElement("a");
+    link.download = `${selectedWeek}_${selectedCrew}_참석현황.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  } catch(e) {
+    alert("이미지 생성 중 오류가 발생했어요.");
+  }
+  btn.textContent = "🖼️ 이미지 저장";
+  btn.disabled = false;
+}
 </script>
 </body>
 </html>
