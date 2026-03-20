@@ -293,6 +293,7 @@
   }
 
   .badge-manager { background: rgba(79,142,247,0.15); color: var(--accent); }
+  .badge-staff   { background: rgba(124,58,237,0.15); color: var(--accent2); }
 
   .empty-msg {
     text-align: center;
@@ -329,6 +330,16 @@
 
 <div class="container">
 
+  <!-- 기수 입력 -->
+  <div class="section-title">기수 입력</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+    <input id="kisu-input" type="text" class="reason-input"
+      placeholder="예) 6기"
+      style="width:120px;font-size:15px;font-weight:600;"
+      oninput="document.getElementById('kisu-display').textContent = this.value || '?기'">
+    <span style="color:var(--muted);font-size:13px;">정리본에 표시될 기수예요</span>
+  </div>
+
   <!-- 크루 선택 -->
   <div class="section-title">크루 선택</div>
   <div id="loading-msg" style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">
@@ -361,7 +372,7 @@
 // ================================================================
 // ⚙️ 설정 - SCRIPT_URL만 수정하세요! 이름은 구글 시트에서 관리
 // ================================================================
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKKzE5zTajuDp3_yqcFyWI1RRPooq6ZQ237kXdJ1WkTiuaPvAzFPHlW8efp3Yuv1Rr/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbhcMiDhTP3TzEWPjUIDt76fxXpSbX7tJHheDH3li0yu8tUuzIXj8MH77nIntZPDoJ/exec";
 const WEEKS = ["1주차","2주차","3주차","4주차","5주차","6주차","7주차","8주차","9주차","10주차"];
 // ================================================================
 
@@ -369,6 +380,10 @@ let selectedWeek = "";
 let selectedCrew = "";
 let memberStatuses = {};
 let CREWS = {}; // 구글 시트에서 불러옴
+
+function getKisu() {
+  return document.getElementById("kisu-input").value.trim() || "?기";
+}
 
 // ── 앱 초기화: 명단 먼저 로드 ──
 async function init() {
@@ -455,7 +470,8 @@ function createMemberCard(member) {
   const card = document.createElement("div");
   card.className = "member-card";
   card.id = `card-${member.name}`;
-  const badge = member.isManager ? `<span class="badge badge-manager">간사</span>` : "";
+  const badge = member.isManager ? `<span class="badge badge-manager">간사</span>`
+             : member.isStaff ? `<span class="badge badge-staff">스태프</span>` : "";
   card.innerHTML = `
     <div class="member-top">
       <div class="member-name">${member.name}${badge}</div>
@@ -520,7 +536,7 @@ async function submitData() {
     await fetch(SCRIPT_URL, {
       method: "POST", mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crew: selectedCrew, week: selectedWeek, rows })
+      body: JSON.stringify({ crew: selectedCrew, week: selectedWeek, rows, kisu: getKisu() })
     });
     document.getElementById("member-section").style.display = "none";
     document.getElementById("done-screen").style.display = "block";
