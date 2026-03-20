@@ -3,57 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ArkCrew 훈련 참석 체크</title>
+<title>ArkCrew 참석 체크</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f1117;
-    --card: #1a1d27;
-    --card2: #22263a;
-    --accent: #4f8ef7;
-    --accent2: #7c3aed;
-    --green: #22c55e;
-    --red: #ef4444;
-    --orange: #f59e0b;
-    --text: #e8eaf0;
-    --muted: #6b7280;
-    --border: #2d3148;
-    --radius: 14px;
+    --bg: #0f1117; --card: #1a1d27; --card2: #22263a;
+    --accent: #4f8ef7; --accent2: #7c3aed;
+    --green: #22c55e; --red: #ef4444; --orange: #f59e0b;
+    --text: #e8eaf0; --muted: #6b7280; --border: #2d3148; --radius: 14px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0 0 60px 0;
-  }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 60px; }
 
   header {
-    background: linear-gradient(135deg, #1a1d27 0%, #22263a 100%);
+    background: linear-gradient(135deg, #1a1d27, #22263a);
     border-bottom: 1px solid var(--border);
-    padding: 20px 20px 16px;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(10px);
+    padding: 20px 20px 16px; text-align: center;
+    position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
   }
-
-  header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
+  header h1 { font-size: 18px; font-weight: 700; color: var(--text); }
   header p  { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-  .week-bar {
-    display: flex; gap: 8px; padding: 14px 16px;
-    overflow-x: auto; scrollbar-width: none;
+  /* 타입 탭 */
+  .type-bar {
+    display: flex; gap: 0;
     background: var(--card); border-bottom: 1px solid var(--border);
   }
-  .week-bar::-webkit-scrollbar { display: none; }
+  .type-btn {
+    flex: 1; padding: 14px 8px; border: none; border-bottom: 3px solid transparent;
+    background: transparent; color: var(--muted);
+    font-size: 14px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .type-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .type-btn:hover  { color: var(--text); }
 
+  .week-bar {
+    display: flex; gap: 8px; padding: 12px 16px;
+    overflow-x: auto; scrollbar-width: none;
+    background: var(--card2); border-bottom: 1px solid var(--border);
+  }
+  .week-bar::-webkit-scrollbar { display: none; }
   .week-btn {
-    flex-shrink: 0; padding: 6px 16px; border-radius: 20px;
+    flex-shrink: 0; padding: 5px 14px; border-radius: 20px;
     border: 1px solid var(--border); background: transparent;
     color: var(--muted); font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
     cursor: pointer; transition: all 0.2s; white-space: nowrap;
@@ -61,29 +53,19 @@
   .week-btn.active { background: var(--accent); border-color: var(--accent); color: white; font-weight: 600; }
 
   .container { max-width: 540px; margin: 0 auto; padding: 16px; }
-
-  .section-title {
-    font-size: 11px; font-weight: 600; color: var(--muted);
-    letter-spacing: 1.5px; text-transform: uppercase; margin: 20px 0 10px;
-  }
+  .section-title { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin: 20px 0 10px; }
 
   .crew-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-
   .crew-btn {
     padding: 12px 4px; border-radius: 10px; border: 1px solid var(--border);
     background: var(--card); color: var(--text); font-size: 13px;
-    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
-    text-align: center; transition: all 0.2s; font-weight: 500;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer; text-align: center; transition: all 0.2s; font-weight: 500;
   }
-  .crew-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .crew-btn:hover  { border-color: var(--accent); color: var(--accent); }
   .crew-btn.active { background: var(--accent); border-color: var(--accent); color: white; font-weight: 700; }
 
   .member-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
-
-  .member-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px; transition: border-color 0.2s;
-  }
+  .member-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; transition: border-color 0.2s; }
   .member-card.attend { border-color: var(--green); }
   .member-card.absent { border-color: var(--red); }
   .member-card.late   { border-color: var(--orange); }
@@ -91,7 +73,6 @@
   .member-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .member-name { font-size: 15px; font-weight: 600; min-width: 60px; }
   .status-btns { display: flex; gap: 6px; }
-
   .status-btn {
     padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border);
     background: transparent; color: var(--muted); font-size: 12px;
@@ -103,7 +84,6 @@
 
   .reason-box { margin-top: 10px; display: none; }
   .reason-box.show { display: block; }
-
   .reason-input {
     width: 100%; padding: 9px 12px; border-radius: 8px;
     border: 1px solid var(--border); background: var(--card2);
@@ -114,46 +94,30 @@
   .reason-input::placeholder { color: var(--muted); }
 
   .submit-wrap { margin-top: 28px; padding-bottom: 20px; }
-
   .submit-btn {
     width: 100%; padding: 16px; border-radius: var(--radius); border: none;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     color: white; font-size: 16px; font-weight: 700;
     font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s; letter-spacing: -0.3px;
+    transition: opacity 0.2s, transform 0.1s;
   }
-  .submit-btn:hover { opacity: 0.9; }
-  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:hover    { opacity: 0.9; }
+  .submit-btn:active   { transform: scale(0.98); }
   .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* 완료 화면 */
   .done-screen { display: none; padding: 40px 0 20px; }
   .done-header { text-align: center; margin-bottom: 24px; }
-  .done-icon { font-size: 56px; margin-bottom: 16px; }
-  .done-screen h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .done-icon   { font-size: 56px; margin-bottom: 16px; }
+  .done-screen h2    { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
   .done-screen .done-sub { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-  /* 제출 내용 미리보기 */
-  .result-box {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 14px;
-  }
-  .result-box-title {
-    font-size: 11px; font-weight: 600; color: var(--muted);
-    letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 12px;
-  }
-  .result-item {
-    display: flex; align-items: baseline;
-    gap: 8px; padding: 5px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-  }
+  .result-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
+  .result-box-title { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 12px; }
+  .result-item { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
   .result-item:last-child { border-bottom: none; }
-  .result-name { font-weight: 600; min-width: 60px; }
-  .result-role { font-size: 11px; color: var(--accent); font-weight: 600; }
+  .result-name   { font-weight: 600; min-width: 60px; }
+  .result-role   { font-size: 11px; color: var(--accent); font-weight: 600; }
   .result-role.staff { color: var(--accent2); }
   .result-status { font-size: 12px; font-weight: 700; }
   .result-status.attend { color: var(--green); }
@@ -162,23 +126,25 @@
   .result-status.none   { color: var(--muted); }
   .result-reason { font-size: 12px; color: var(--muted); }
 
-  /* 복사 버튼 */
+  .action-btns { display: flex; gap: 10px; margin-bottom: 12px; }
   .copy-btn {
-    width: 100%; padding: 14px; border-radius: var(--radius);
+    flex: 1; padding: 14px; border-radius: var(--radius);
     border: 1px solid var(--border); background: var(--card2);
     color: var(--text); font-size: 15px; font-weight: 600;
     font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
     transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn:hover  { border-color: var(--accent); color: var(--accent); }
   .copy-btn.copied { background: var(--green); border-color: var(--green); color: white; }
 
-  .done-footer {
-    text-align: center; margin-top: 16px;
+  .done-footer { text-align: center; margin-top: 8px; }
+  .refresh-btn {
+    padding: 10px 24px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card);
     color: var(--muted); font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.2s;
   }
-
-  .loading { opacity: 0.5; pointer-events: none; }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   .spinner {
     display: inline-block; width: 18px; height: 18px;
@@ -188,39 +154,56 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-size: 11px; font-weight: 600; margin-left: 6px;
-  }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-left: 6px; }
   .badge-manager { background: rgba(79,142,247,0.15); color: var(--accent); }
   .badge-staff   { background: rgba(124,58,237,0.15); color: var(--accent2); }
 
-  .progress-bar {
-    height: 3px; background: var(--border); border-radius: 2px; margin: 12px 0 0; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 2px; transition: width 0.3s;
-  }
+  .progress-bar  { height: 3px; background: var(--border); border-radius: 2px; margin: 12px 0 0; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.3s; }
+
+  /* 타입별 accent 색상 */
+  .type-예배 .submit-btn  { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .type-보강 .submit-btn  { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .type-예배 .progress-fill { background: linear-gradient(90deg, #22c55e, #16a34a); }
+  .type-보강 .progress-fill { background: linear-gradient(90deg, #f59e0b, #d97706); }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>⛵ ArkCrew 훈련 참석 체크</h1>
-  <p id="header-sub">주차와 크루를 선택해주세요</p>
+  <h1>⛵ ArkCrew 참석 체크</h1>
+  <p id="header-sub">설문 유형을 선택해주세요</p>
 </header>
 
-<div class="week-bar" id="week-bar"></div>
+<!-- 타입 탭 -->
+<div class="type-bar">
+  <button class="type-btn" onclick="selectType('훈련')">🏋️ 훈련참석여부</button>
+  <button class="type-btn" onclick="selectType('예배')">🙏 예배참석</button>
+  <button class="type-btn" onclick="selectType('보강')">📚 보강</button>
+</div>
 
-<div class="container">
+<!-- 주차 선택 -->
+<div class="week-bar" id="week-bar" style="display:none"></div>
 
-  <div class="section-title">크루 선택</div>
-  <div id="loading-msg" style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">
-    <span class="spinner" style="display:inline-block"></span> 명단 불러오는 중...
+<div class="container" id="main-container">
+
+  <!-- 초기 안내 -->
+  <div id="type-guide" style="text-align:center;padding:60px 0;color:var(--muted);">
+    <div style="font-size:48px;margin-bottom:16px;">⛵</div>
+    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">ArkCrew 참석 체크</div>
+    <div style="font-size:13px;">위에서 설문 유형을 먼저 선택해주세요</div>
+    <div id="loading-indicator" style="display:none;margin-top:20px;font-size:13px;">
+      <span class="spinner" style="border-top-color:var(--muted)"></span> 명단 불러오는 중...
+    </div>
   </div>
-  <div class="crew-grid" id="crew-grid"></div>
 
+  <!-- 크루 선택 -->
+  <div id="crew-section" style="display:none">
+    <div class="section-title">크루 선택</div>
+    <div class="crew-grid" id="crew-grid"></div>
+  </div>
+
+  <!-- 멤버 리스트 -->
   <div id="member-section" style="display:none">
     <div class="section-title" id="member-section-title">멤버 참석 현황</div>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
@@ -237,98 +220,86 @@
       <h2>제출 완료!</h2>
       <p class="done-sub" id="done-msg">구글 시트에 저장되었습니다.</p>
     </div>
-
-    <!-- 제출 내용 미리보기 -->
     <div class="result-box">
       <div class="result-box-title">📋 제출한 내용</div>
       <div id="result-list"></div>
     </div>
-
-    <!-- 버튼 영역 -->
-    <div style="display:flex;gap:10px;margin-bottom:0;">
-      <button class="copy-btn" id="copy-btn" onclick="copyResult()" style="flex:1;">
-        <span>📋</span><span>텍스트 복사</span>
-      </button>
-      <button class="copy-btn" id="save-btn" onclick="saveImage()" style="flex:1;">
-        <span>🖼️</span><span>이미지 저장</span>
-      </button>
+    <div class="action-btns">
+      <button class="copy-btn" id="copy-btn" onclick="copyResult()"><span>📋</span><span>텍스트 복사</span></button>
+      <button class="copy-btn" id="save-btn"  onclick="saveImage()"><span>🖼️</span><span>이미지 저장</span></button>
     </div>
-
     <div class="done-footer">
-      <button onclick="location.reload()" style="
-        margin-top:4px;
-        padding: 10px 24px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: var(--card);
-        color: var(--muted);
-        font-size: 13px;
-        font-family: 'Noto Sans KR', sans-serif;
-        cursor: pointer;
-        transition: all 0.2s;
-      " onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
-         onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
-        🔄 새로고침
-      </button>
+      <button class="refresh-btn" onclick="location.reload()">🔄 새로고침</button>
     </div>
   </div>
 
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwN7lUKvhRoVWbIFdNh3rr8n67NpNOpt7Yyr3DrQ2cNNCtBx7pWnX0KnjuDGPsErSmi/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrAdLMTRxaH6w2CeK5IGyRfntljUhB8ZI1KTRLTmhqDhHutBKbWumKScG6tZwoWaZQ/exec";
 const WEEKS = ["1주차","2주차","3주차","4주차","5주차","6주차","7주차","8주차","9주차","10주차"];
 
+let CREWS = {};         // 명단 (한번만 로드)
+let crewsLoaded = false;
+let selectedType = "";
 let selectedWeek = "";
 let selectedCrew = "";
 let memberStatuses = {};
-let CREWS = {};
 let _resultText = "";
 
+// ── 앱 초기화: 명단 한번만 로드 ──
 async function init() {
-  showLoading(true);
+  document.getElementById("loading-indicator").style.display = "block";
   try {
-    if (!SCRIPT_URL || SCRIPT_URL.includes("여기에")) throw new Error("SCRIPT_URL을 설정해주세요");
     const res = await fetch(SCRIPT_URL + "?action=getMembers", { cache: "no-cache" });
     if (!res.ok) throw new Error("서버 응답 오류: " + res.status);
     const data = await res.json();
     if (!data.crews) throw new Error("명단 데이터 없음");
     CREWS = data.crews;
-    initWeeks();
-    initCrews();
+    crewsLoaded = true;
   } catch (err) {
     console.error("명단 로드 실패:", err);
-    document.getElementById("loading-msg").style.display = "none";
-    document.getElementById("crew-grid").innerHTML =
-      '<p style="color:#ef4444;font-size:13px;padding:10px;">⚠️ 명단을 불러오지 못했어요.<br>' + err.message +
-      '<br><button onclick="init()" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;">다시 시도</button></p>';
+    document.getElementById("type-guide").innerHTML =
+      '<div style="color:#ef4444;font-size:13px;padding:20px 0;">⚠️ 명단을 불러오지 못했어요.<br>' + err.message +
+      '<br><button onclick="init()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;">다시 시도</button></div>';
   }
-  showLoading(false);
+  document.getElementById("loading-indicator").style.display = "none";
 }
 
-function showLoading(on) {
-  document.getElementById("loading-msg").style.display = on ? "block" : "none";
-}
+// ── 타입 선택 ──
+function selectType(type) {
+  selectedType = type;
+  selectedWeek = "";
+  selectedCrew = "";
+  memberStatuses = {};
 
-function initWeeks() {
-  const bar = document.getElementById("week-bar");
-  bar.innerHTML = "";
+  // 탭 스타일
+  document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
+  event.target.classList.add("active");
+
+  // 타입별 컨테이너 색상
+  document.getElementById("main-container").className = "";
+  document.getElementById("main-container").classList.add("type-" + type);
+
+  // 주차바 표시
+  const weekBar = document.getElementById("week-bar");
+  weekBar.style.display = "flex";
+  weekBar.innerHTML = "";
   WEEKS.forEach(w => {
     const btn = document.createElement("button");
     btn.className = "week-btn";
     btn.textContent = w;
     btn.onclick = () => selectWeek(w);
-    bar.appendChild(btn);
+    weekBar.appendChild(btn);
   });
-}
 
-function selectWeek(week) {
-  selectedWeek = week;
-  document.querySelectorAll(".week-btn").forEach(b => b.classList.toggle("active", b.textContent === week));
-  updateHeader();
-}
+  // 가이드 숨기고 크루 섹션 표시
+  document.getElementById("type-guide").style.display = "none";
+  document.getElementById("crew-section").style.display = "block";
+  document.getElementById("member-section").style.display = "none";
+  document.getElementById("done-screen").style.display = "none";
 
-function initCrews() {
+  // 크루 버튼 생성
   const grid = document.getElementById("crew-grid");
   grid.innerHTML = "";
   Object.keys(CREWS).sort((a,b) => parseInt(a) - parseInt(b)).forEach(crew => {
@@ -338,6 +309,15 @@ function initCrews() {
     btn.onclick = () => selectCrew(crew);
     grid.appendChild(btn);
   });
+
+  updateHeader();
+  window.scrollTo(0, 0);
+}
+
+function selectWeek(week) {
+  selectedWeek = week;
+  document.querySelectorAll(".week-btn").forEach(b => b.classList.toggle("active", b.textContent === week));
+  updateHeader();
 }
 
 function selectCrew(crew) {
@@ -350,32 +330,43 @@ function selectCrew(crew) {
 }
 
 function updateHeader() {
+  const typeLabel = { "훈련": "🏋️ 훈련참석여부", "예배": "🙏 예배참석", "보강": "📚 보강" };
   const sub = document.getElementById("header-sub");
-  if (selectedWeek && selectedCrew) sub.textContent = `${selectedWeek} · ${selectedCrew}`;
-  else if (selectedWeek) sub.textContent = `${selectedWeek} 선택됨`;
-  else sub.textContent = "주차와 크루를 선택해주세요";
+  if (selectedWeek && selectedCrew) sub.textContent = `${typeLabel[selectedType]} · ${selectedWeek} · ${selectedCrew}`;
+  else if (selectedWeek) sub.textContent = `${typeLabel[selectedType] || ""} · ${selectedWeek} 선택됨`;
+  else if (selectedType) sub.textContent = `${typeLabel[selectedType]} · 주차를 선택해주세요`;
+  else sub.textContent = "설문 유형을 선택해주세요";
 }
 
 function renderMembers(crew) {
-  const section = document.getElementById("member-section");
-  const list = document.getElementById("member-list");
+  const traineeOnly = (selectedType === "예배" || selectedType === "보강");
+  const allMembers = CREWS[crew] || [];
+
+  // 예배/보강은 훈련생만 표시
+  const members = traineeOnly
+    ? allMembers.filter(m => !m.isManager && !m.isStaff)
+    : allMembers;
+
   document.getElementById("member-section-title").textContent = `${crew} 멤버 참석 현황`;
-  section.style.display = "block";
-  list.innerHTML = "";
+  document.getElementById("member-section").style.display = "block";
   document.getElementById("done-screen").style.display = "none";
-  (CREWS[crew] || []).forEach(m => {
+
+  const list = document.getElementById("member-list");
+  list.innerHTML = "";
+  members.forEach(m => {
     memberStatuses[m.name] = { status: "", reason: "" };
-    list.appendChild(createMemberCard(m));
+    list.appendChild(createMemberCard(m, traineeOnly));
   });
   updateProgress();
 }
 
-function createMemberCard(member) {
+function createMemberCard(member, traineeOnly) {
   const card = document.createElement("div");
   card.className = "member-card";
   card.id = `card-${member.name}`;
-  const badge = member.isManager ? `<span class="badge badge-manager">간사</span>`
-              : member.isStaff   ? `<span class="badge badge-staff">스태프</span>` : "";
+  // 예배/보강은 배지 표시 안함 (훈련생만이므로)
+  const badge = !traineeOnly && member.isManager ? `<span class="badge badge-manager">간사</span>`
+              : !traineeOnly && member.isStaff   ? `<span class="badge badge-staff">스태프</span>` : "";
   card.innerHTML = `
     <div class="member-top">
       <div class="member-name">${member.name}${badge}</div>
@@ -424,7 +415,7 @@ function setReason(name, value) { memberStatuses[name].reason = value; }
 
 function updateProgress() {
   const total = Object.keys(memberStatuses).length;
-  const done = Object.values(memberStatuses).filter(s => s.status !== "").length;
+  const done  = Object.values(memberStatuses).filter(s => s.status !== "").length;
   document.getElementById("progress-fill").style.width = (total ? done / total * 100 : 0) + "%";
 }
 
@@ -450,17 +441,17 @@ async function submitData() {
     await fetch(SCRIPT_URL, {
       method: "POST", mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crew: selectedCrew, week: selectedWeek, rows })
+      body: JSON.stringify({ type: selectedType, crew: selectedCrew, week: selectedWeek, rows })
     });
+
+    // 완료 후 UI 정리
+    document.getElementById("week-bar").style.display = "none";
+    document.getElementById("crew-section").style.display = "none";
     document.getElementById("member-section").style.display = "none";
     document.getElementById("done-screen").style.display = "block";
+    const typeLabel = { "훈련": "훈련참석여부", "예배": "예배참석", "보강": "보강" };
     document.getElementById("done-msg").textContent =
-      `${selectedWeek} ${selectedCrew} 참석 현황이 구글 시트에 저장되었습니다.`;
-    // 제출 후 크루 선택 영역 숨기기 (스크롤 없이 바로 결과 보이도록)
-    document.getElementById("week-bar").style.display = "none";
-    document.getElementById("crew-grid").style.display = "none";
-    document.getElementById("loading-msg").style.display = "none";
-    document.querySelectorAll(".section-title").forEach(el => el.style.display = "none");
+      `${selectedWeek} ${selectedCrew} ${typeLabel[selectedType]} 현황이 저장되었습니다.`;
     renderResult(rows);
     window.scrollTo(0, 0);
   } catch (err) {
@@ -472,27 +463,28 @@ async function submitData() {
 
 // ── 제출 내용 렌더링 ──
 function renderResult(rows) {
-  const members = CREWS[selectedCrew] || [];
-  const statusMap = {};
+  const traineeOnly = (selectedType === "예배" || selectedType === "보강");
+  const allMembers  = CREWS[selectedCrew] || [];
+  const members     = traineeOnly ? allMembers.filter(m => !m.isManager && !m.isStaff) : allMembers;
+  const statusMap   = {};
   rows.forEach(r => { statusMap[r.name] = r; });
 
-  const statusKo  = { "참석": "참석", "불참": "불참", "늦참": "늦참", "": "미정" };
   const statusEmoji = { "참석": "✅", "불참": "❌", "늦참": "⏰", "": "❓" };
+  const statusKo    = { "참석": "참석", "불참": "불참", "늦참": "늦참", "": "미정" };
   const statusCls   = { "참석": "attend", "불참": "absent", "늦참": "late", "": "none" };
+  const typeLabel   = { "훈련": "훈련참석여부", "예배": "예배참석", "보강": "보강" };
 
   const list = document.getElementById("result-list");
   list.innerHTML = "";
-
-  const textLines = [`[${selectedWeek} ${selectedCrew}]`, ""];
+  const textLines = [`[${selectedWeek} ${selectedCrew} ${typeLabel[selectedType]}]`, ""];
 
   members.forEach(m => {
     const s = statusMap[m.name] || {};
     const status = s.status || "";
     const reason = s.reason || "";
-    const roleLabel = m.isManager ? "간사" : m.isStaff ? "스태프" : "";
-    const roleCls   = m.isManager ? "" : "staff";
+    const roleLabel = !traineeOnly && m.isManager ? "간사" : !traineeOnly && m.isStaff ? "스태프" : "";
+    const roleCls   = m.isStaff ? "staff" : "";
 
-    // UI 카드
     const item = document.createElement("div");
     item.className = "result-item";
     item.innerHTML = `
@@ -500,11 +492,9 @@ function renderResult(rows) {
       <span class="result-name">${m.name}</span>
       ${roleLabel ? `<span class="result-role ${roleCls}">${roleLabel}</span>` : ""}
       <span class="result-status ${statusCls[status]}">${statusKo[status]}</span>
-      ${reason ? `<span class="result-reason">(${reason})</span>` : ""}
-    `;
+      ${reason ? `<span class="result-reason">(${reason})</span>` : ""}`;
     list.appendChild(item);
 
-    // 텍스트 (복사용)
     const roleStr   = roleLabel ? `[${roleLabel}] ` : "";
     const reasonStr = reason ? ` (${reason})` : "";
     textLines.push(`${statusEmoji[status]} ${roleStr}${m.name} - ${statusKo[status]}${reasonStr}`);
@@ -517,16 +507,11 @@ function renderResult(rows) {
 function copyResult() {
   if (!_resultText) return;
   const copyBtn = document.getElementById("copy-btn");
-
   const doSuccess = () => {
     copyBtn.classList.add("copied");
     copyBtn.innerHTML = "<span>✅</span><span>복사됐어요!</span>";
-    setTimeout(() => {
-      copyBtn.classList.remove("copied");
-      copyBtn.innerHTML = "<span>📋</span><span>텍스트 복사</span>";
-    }, 2500);
+    setTimeout(() => { copyBtn.classList.remove("copied"); copyBtn.innerHTML = "<span>📋</span><span>텍스트 복사</span>"; }, 2500);
   };
-
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(_resultText).then(doSuccess).catch(() => fallbackCopy(doSuccess));
   } else {
@@ -540,7 +525,7 @@ function fallbackCopy(cb) {
   ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
   document.body.appendChild(ta);
   ta.focus(); ta.select();
-  try { document.execCommand("copy"); cb(); } catch(e) { alert("복사에 실패했어요. 직접 선택해서 복사해주세요."); }
+  try { document.execCommand("copy"); cb(); } catch(e) { alert("복사에 실패했어요."); }
   document.body.removeChild(ta);
 }
 
@@ -549,47 +534,31 @@ async function saveImage() {
   const saveBtn = document.getElementById("save-btn");
   saveBtn.innerHTML = "<span>⏳</span><span>생성 중...</span>";
   saveBtn.disabled = true;
-
   try {
-    // html2canvas 동적 로딩
     if (typeof html2canvas === "undefined") {
       await new Promise((resolve, reject) => {
         const s = document.createElement("script");
         s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-        s.onload = resolve;
-        s.onerror = reject;
+        s.onload = resolve; s.onerror = reject;
         document.head.appendChild(s);
       });
     }
-
-    // 캡처 대상: 제출 내용 박스만
-    const target = document.getElementById("done-screen");
-    // 버튼/footer 잠깐 숨기기
-    const btnArea = target.querySelector("div[style*='display:flex']");
+    const target  = document.getElementById("done-screen");
+    const actBtns = target.querySelector(".action-btns");
     const footer  = target.querySelector(".done-footer");
-    if (btnArea) btnArea.style.display = "none";
+    if (actBtns) actBtns.style.display = "none";
     if (footer)  footer.style.display  = "none";
-
-    const canvas = await html2canvas(target, {
-      backgroundColor: "#0f1117",
-      scale: 2,
-      useCORS: true,
-      logging: false
-    });
-
-    if (btnArea) btnArea.style.display = "";
+    const canvas = await html2canvas(target, { backgroundColor: "#0f1117", scale: 2, useCORS: true, logging: false });
+    if (actBtns) actBtns.style.display = "";
     if (footer)  footer.style.display  = "";
-
     const link = document.createElement("a");
-    link.download = `${selectedWeek}_${selectedCrew}_참석현황.png`;
+    link.download = `${selectedWeek}_${selectedCrew}_${selectedType}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
-
   } catch(err) {
-    console.error(err);
     alert("이미지 생성 중 오류가 발생했어요.");
+    console.error(err);
   }
-
   saveBtn.innerHTML = "<span>🖼️</span><span>이미지 저장</span>";
   saveBtn.disabled = false;
 }
