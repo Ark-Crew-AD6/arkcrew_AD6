@@ -236,7 +236,7 @@
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwal8suqxD4MUDqMT22gOQStthNvOJe8S4KDHXJknd7weCG2CO_81KlfFx-vZRbAUQ5/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbye_CQOE6-6jypAsxA63J1UB-_5POuv3EMMzw32GppSXDLyhJUTCgPDH8GA1P81vl4W/exec";
 const WEEKS = ["1주차","2주차","3주차","4주차","5주차","6주차","7주차","8주차","9주차","10주차"];
 
 let CREWS = {};         // 명단 (한번만 로드)
@@ -254,22 +254,58 @@ let pendingType  = "";   // 로딩 중 탭 눌렀을 때 대기 타입
 async function init() {
   crewsLoading = true;
   document.getElementById("loading-indicator").style.display = "block";
+
   try {
-    const res = await fetch(SCRIPT_URL + "?action=getMembers", { cache: "no-cache" });
+    // 1) 캐시 확인 (localStorage 지원 환경만 - 앱 인앱브라우저 등 미지원 시 자동 스킵)
+    const CACHE_KEY = "arkcrew_members";
+    const CACHE_TTL = 10 * 60 * 1000; // 10분
+    let cacheAvailable = false;
+    try {
+      localStorage.setItem("__test__", "1");
+      localStorage.removeItem("__test__");
+      cacheAvailable = true;
+    } catch(_) {}
+
+    if (cacheAvailable) {
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { data, ts } = JSON.parse(cached);
+          if (Date.now() - ts < CACHE_TTL && data.crews) {
+            CREWS = data.crews;
+            crewsLoaded = true;
+            crewsLoading = false;
+            document.getElementById("loading-indicator").style.display = "none";
+            if (pendingType) { const t = pendingType; pendingType = ""; _doSelectType(t); }
+
+            // 백그라운드에서 최신 명단 갱신
+            fetch(SCRIPT_URL + "?action=getMembers")
+              .then(r => r.json())
+              .then(d => { if (d.crews) localStorage.setItem(CACHE_KEY, JSON.stringify({ data: d, ts: Date.now() })); })
+              .catch(() => {});
+            return;
+          }
+        }
+      } catch(_) {}
+    }
+
+    // 2) 캐시 없거나 만료 또는 미지원 → 서버에서 로드
+    const res = await fetch(SCRIPT_URL + "?action=getMembers");
     if (!res.ok) throw new Error("서버 응답 오류: " + res.status);
     const data = await res.json();
     if (!data.crews) throw new Error("명단 데이터 없음");
+
+    // 캐시 저장 (지원 환경만)
+    if (cacheAvailable) {
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() })); } catch(_) {}
+    }
+
     CREWS = data.crews;
     crewsLoaded = true;
     crewsLoading = false;
     document.getElementById("loading-indicator").style.display = "none";
+    if (pendingType) { const t = pendingType; pendingType = ""; _doSelectType(t); }
 
-    // 로딩 중에 탭을 눌렀다면 자동으로 해당 타입으로 진행
-    if (pendingType) {
-      const t = pendingType;
-      pendingType = "";
-      _doSelectType(t);
-    }
   } catch (err) {
     crewsLoading = false;
     console.error("명단 로드 실패:", err);
@@ -474,33 +510,25 @@ async function submitData() {
     reason: s.reason
   }));
 
-  try {
-    await fetch(SCRIPT_URL, {
-      method: "POST", mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: selectedType, crew: selectedCrew, week: selectedWeek, rows })
-    });
+  // 즉시 완료 화면 표시 (no-cors라 응답 못 읽으니 기다릴 필요 없음)
+  document.getElementById("week-bar").style.display = "none";
+  document.getElementById("crew-section").style.display = "none";
+  document.getElementById("member-section").style.display = "none";
+  document.getElementById("done-screen").style.display = "block";
+  const typeLabel = { "훈련": "훈련참석여부", "예배": "예배참석", "보강": "보강" };
+  document.getElementById("done-msg").textContent =
+    `${selectedWeek} ${selectedCrew} ${typeLabel[selectedType]} 현황이 저장되었습니다.`;
+  renderResult(rows);
+  btn.disabled = false;
+  btn.innerHTML = "제출하기";
+  window.scrollTo(0, 0);
 
-    // 완료 후 UI 정리
-    document.getElementById("week-bar").style.display = "none";
-    document.getElementById("crew-section").style.display = "none";
-    document.getElementById("member-section").style.display = "none";
-    document.getElementById("done-screen").style.display = "block";
-    const typeLabel = { "훈련": "훈련참석여부", "예배": "예배참석", "보강": "보강" };
-    document.getElementById("done-msg").textContent =
-      `${selectedWeek} ${selectedCrew} ${typeLabel[selectedType]} 현황이 저장되었습니다.`;
-    renderResult(rows);
-
-    // 제출 버튼 원복
-    btn.disabled = false;
-    btn.innerHTML = "제출하기";
-
-    window.scrollTo(0, 0);
-  } catch (err) {
-    alert("오류가 발생했어요. 다시 시도해주세요.");
-    btn.disabled = false;
-    btn.innerHTML = "제출하기";
-  }
+  // 백그라운드로 서버에 전송 (기다리지 않음)
+  fetch(SCRIPT_URL, {
+    method: "POST", mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type: selectedType, crew: selectedCrew, week: selectedWeek, rows })
+  }).catch(err => console.warn("백그라운드 제출 실패:", err));
 }
 
 // ── 제출 내용 렌더링 ──
