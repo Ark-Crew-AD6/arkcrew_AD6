@@ -244,10 +244,15 @@
       <div id="result-list"></div>
     </div>
 
-    <!-- 복사 버튼 -->
-    <button class="copy-btn" id="copy-btn" onclick="copyResult()">
-      <span>📋</span><span>텍스트 복사</span>
-    </button>
+    <!-- 버튼 영역 -->
+    <div style="display:flex;gap:10px;margin-bottom:0;">
+      <button class="copy-btn" id="copy-btn" onclick="copyResult()" style="flex:1;">
+        <span>📋</span><span>텍스트 복사</span>
+      </button>
+      <button class="copy-btn" id="save-btn" onclick="saveImage()" style="flex:1;">
+        <span>🖼️</span><span>이미지 저장</span>
+      </button>
+    </div>
 
     <div class="done-footer">다시 제출하려면 페이지를 새로고침 해주세요 🔄</div>
   </div>
@@ -516,6 +521,56 @@ function fallbackCopy(cb) {
   ta.focus(); ta.select();
   try { document.execCommand("copy"); cb(); } catch(e) { alert("복사에 실패했어요. 직접 선택해서 복사해주세요."); }
   document.body.removeChild(ta);
+}
+
+// ── 이미지 저장 ──
+async function saveImage() {
+  const saveBtn = document.getElementById("save-btn");
+  saveBtn.innerHTML = "<span>⏳</span><span>생성 중...</span>";
+  saveBtn.disabled = true;
+
+  try {
+    // html2canvas 동적 로딩
+    if (typeof html2canvas === "undefined") {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
+    // 캡처 대상: 제출 내용 박스만
+    const target = document.getElementById("done-screen");
+    // 버튼/footer 잠깐 숨기기
+    const btnArea = target.querySelector("div[style*='display:flex']");
+    const footer  = target.querySelector(".done-footer");
+    if (btnArea) btnArea.style.display = "none";
+    if (footer)  footer.style.display  = "none";
+
+    const canvas = await html2canvas(target, {
+      backgroundColor: "#0f1117",
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+
+    if (btnArea) btnArea.style.display = "";
+    if (footer)  footer.style.display  = "";
+
+    const link = document.createElement("a");
+    link.download = `${selectedWeek}_${selectedCrew}_참석현황.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+  } catch(err) {
+    console.error(err);
+    alert("이미지 생성 중 오류가 발생했어요.");
+  }
+
+  saveBtn.innerHTML = "<span>🖼️</span><span>이미지 저장</span>";
+  saveBtn.disabled = false;
 }
 
 init();
