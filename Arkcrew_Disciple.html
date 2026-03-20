@@ -15,6 +15,15 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 60px; }
 
+  /* 웹에서 가운데 정렬 래퍼 */
+  .page-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    background: var(--bg);
+    min-height: 100vh;
+    box-shadow: 0 0 60px rgba(0,0,0,0.5);
+  }
+
   header {
     background: linear-gradient(135deg, #1a1d27, #22263a);
     border-bottom: 1px solid var(--border);
@@ -169,6 +178,8 @@
 </style>
 </head>
 <body>
+
+<div class="page-wrap">
 
 <header>
   <h1>⛵ ArkCrew 참석 체크</h1>
@@ -635,5 +646,6 @@ async function saveImage() {
 
 init();
 </script>
+</div>
 </body>
 </html>
