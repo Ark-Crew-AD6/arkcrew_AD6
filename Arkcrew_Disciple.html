@@ -247,7 +247,7 @@
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbye_CQOE6-6jypAsxA63J1UB-_5POuv3EMMzw32GppSXDLyhJUTCgPDH8GA1P81vl4W/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpAd6L48h6qScM30zSIfaldizkajmblMIi5EPIlPq4G6kQEPdW1ldg1KM0zh9Q-bmY/exec";
 const WEEKS = ["1주차","2주차","3주차","4주차","5주차","6주차","7주차","8주차","9주차","10주차"];
 
 let CREWS = {};         // 명단 (한번만 로드)
@@ -457,7 +457,7 @@ function createMemberCard(member, traineeOnly) {
       <div class="status-btns">
         <button class="status-btn" onclick="setStatus('${member.name}', 'attend', this)">참석</button>
         <button class="status-btn" onclick="setStatus('${member.name}', 'absent', this)">불참</button>
-        <button class="status-btn" onclick="setStatus('${member.name}', 'late', this)">늦참</button>
+        <button class="status-btn" onclick="setStatus('${member.name}', 'late', this)">부분참</button>
       </div>
     </div>
     <div class="reason-box" id="reason-${member.name}">
@@ -486,7 +486,7 @@ function setStatus(name, status, btn) {
     if (status === "absent" || status === "late") {
       reasonBox.classList.add("show");
       document.getElementById(`input-${name}`).placeholder =
-        status === "absent" ? "불참 사유를 입력해주세요" : "도착 예정 시간 입력 (예: 18:30)";
+        status === "absent" ? "불참 사유를 입력해주세요" : "시간 입력 (예: 18:30 도착 / 20:00 퇴장)";
     } else {
       reasonBox.classList.remove("show");
       memberStatuses[name].reason = "";
@@ -517,7 +517,7 @@ async function submitData() {
 
   const rows = Object.entries(memberStatuses).map(([name, s]) => ({
     week: selectedWeek, crew: selectedCrew, name,
-    status: s.status === "attend" ? "참석" : s.status === "absent" ? "불참" : s.status === "late" ? "늦참" : "",
+    status: s.status === "attend" ? "참석" : s.status === "absent" ? "불참" : s.status === "late" ? "부분참" : "",
     reason: s.reason
   }));
 
@@ -550,9 +550,9 @@ function renderResult(rows) {
   const statusMap   = {};
   rows.forEach(r => { statusMap[r.name] = r; });
 
-  const statusEmoji = { "참석": "✅", "불참": "❌", "늦참": "⏰", "": "❓" };
-  const statusKo    = { "참석": "참석", "불참": "불참", "늦참": "늦참", "": "미정" };
-  const statusCls   = { "참석": "attend", "불참": "absent", "늦참": "late", "": "none" };
+  const statusEmoji = { "참석": "✅", "불참": "❌", "부분참": "⏰", "": "❓" };
+  const statusKo    = { "참석": "참석", "불참": "불참", "부분참": "부분참", "": "미정" };
+  const statusCls   = { "참석": "attend", "불참": "absent", "부분참": "late", "": "none" };
   const typeLabel   = { "훈련": "훈련참석여부", "예배": "예배참석", "보강": "보강" };
 
   const list = document.getElementById("result-list");
