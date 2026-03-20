@@ -248,16 +248,11 @@ let memberStatuses = {};
 let _resultText = "";
 
 // ── 앱 초기화: 명단 한번만 로드 ──
-function setTabsDisabled(disabled) {
-  document.querySelectorAll(".type-btn").forEach(b => {
-    b.disabled = disabled;
-    b.style.opacity = disabled ? "0.35" : "1";
-    b.style.cursor  = disabled ? "not-allowed" : "pointer";
-  });
-}
+let crewsLoading = true; // 로딩 상태 추적
+let pendingType  = "";   // 로딩 중 탭 눌렀을 때 대기 타입
 
 async function init() {
-  setTabsDisabled(true); // 명단 로딩 중 탭 비활성화
+  crewsLoading = true;
   document.getElementById("loading-indicator").style.display = "block";
   try {
     const res = await fetch(SCRIPT_URL + "?action=getMembers", { cache: "no-cache" });
@@ -266,32 +261,66 @@ async function init() {
     if (!data.crews) throw new Error("명단 데이터 없음");
     CREWS = data.crews;
     crewsLoaded = true;
-    setTabsDisabled(false); // 명단 로드 완료 → 탭 활성화
+    crewsLoading = false;
+    document.getElementById("loading-indicator").style.display = "none";
+
+    // 로딩 중에 탭을 눌렀다면 자동으로 해당 타입으로 진행
+    if (pendingType) {
+      const t = pendingType;
+      pendingType = "";
+      _doSelectType(t);
+    }
   } catch (err) {
+    crewsLoading = false;
     console.error("명단 로드 실패:", err);
+    document.getElementById("loading-indicator").style.display = "none";
     document.getElementById("type-guide").innerHTML =
       '<div style="color:#ef4444;font-size:13px;padding:20px 0;">⚠️ 명단을 불러오지 못했어요.<br>' + err.message +
       '<br><button onclick="init()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;">다시 시도</button></div>';
   }
-  document.getElementById("loading-indicator").style.display = "none";
 }
 
 // ── 타입 선택 ──
 function selectType(type) {
+  // 탭 스타일 먼저 적용 (피드백)
+  document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
+  event.target.classList.add("active");
+
+  if (crewsLoading) {
+    // 아직 로딩 중 → 대기 등록 + 안내 메시지
+    pendingType = type;
+    document.getElementById("type-guide").style.display = "block";
+    document.getElementById("crew-section").style.display = "none";
+    document.getElementById("member-section").style.display = "none";
+    document.getElementById("done-screen").style.display = "none";
+    document.getElementById("week-bar").style.display = "none";
+    document.getElementById("type-guide").innerHTML = `
+      <div style="text-align:center;padding:50px 0;">
+        <span class="spinner" style="border-top-color:var(--accent);width:28px;height:28px;border-width:3px;"></span>
+        <div style="margin-top:16px;font-size:15px;font-weight:600;color:var(--text);">명단 불러오는 중...</div>
+        <div style="margin-top:8px;font-size:13px;color:var(--muted);">잠시만 기다려주시면 바로 시작돼요 😊</div>
+      </div>`;
+    return;
+  }
+
+  _doSelectType(type);
+}
+
+function _doSelectType(type) {
   selectedType = type;
   selectedWeek = "";
   selectedCrew = "";
   memberStatuses = {};
 
   // 탭 스타일
-  document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
-  event.target.classList.add("active");
+  document.querySelectorAll(".type-btn").forEach(b => {
+    const labels = { "훈련": "🏋️ 훈련참석여부", "예배": "🙏 예배참석", "보강": "📚 보강" };
+    b.classList.toggle("active", b.textContent.trim() === (labels[type] || "").trim());
+  });
 
-  // 타입별 컨테이너 색상
   document.getElementById("main-container").className = "";
   document.getElementById("main-container").classList.add("type-" + type);
 
-  // 주차바 표시
   const weekBar = document.getElementById("week-bar");
   weekBar.style.display = "flex";
   weekBar.innerHTML = "";
@@ -303,13 +332,11 @@ function selectType(type) {
     weekBar.appendChild(btn);
   });
 
-  // 가이드 숨기고 크루 섹션 표시
   document.getElementById("type-guide").style.display = "none";
   document.getElementById("crew-section").style.display = "block";
   document.getElementById("member-section").style.display = "none";
   document.getElementById("done-screen").style.display = "none";
 
-  // 크루 버튼 생성
   const grid = document.getElementById("crew-grid");
   grid.innerHTML = "";
   Object.keys(CREWS).sort((a,b) => parseInt(a) - parseInt(b)).forEach(crew => {
