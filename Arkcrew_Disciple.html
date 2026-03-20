@@ -42,279 +42,165 @@
     backdrop-filter: blur(10px);
   }
 
-  header h1 {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    color: var(--text);
-  }
-
-  header p {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 3px;
-  }
+  header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
+  header p  { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
   .week-bar {
-    display: flex;
-    gap: 8px;
-    padding: 14px 16px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
+    display: flex; gap: 8px; padding: 14px 16px;
+    overflow-x: auto; scrollbar-width: none;
+    background: var(--card); border-bottom: 1px solid var(--border);
   }
-
   .week-bar::-webkit-scrollbar { display: none; }
 
   .week-btn {
-    flex-shrink: 0;
-    padding: 6px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-size: 13px;
-    font-family: 'Noto Sans KR', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
+    flex-shrink: 0; padding: 6px 16px; border-radius: 20px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
   }
+  .week-btn.active { background: var(--accent); border-color: var(--accent); color: white; font-weight: 600; }
 
-  .week-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-    font-weight: 600;
-  }
-
-  .container {
-    max-width: 540px;
-    margin: 0 auto;
-    padding: 16px;
-  }
+  .container { max-width: 540px; margin: 0 auto; padding: 16px; }
 
   .section-title {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin: 20px 0 10px;
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    letter-spacing: 1.5px; text-transform: uppercase; margin: 20px 0 10px;
   }
 
-  /* 크루 선택 */
-  .crew-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
+  .crew-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
   .crew-btn {
-    padding: 12px 4px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-    font-size: 13px;
-    font-family: 'Noto Sans KR', sans-serif;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s;
-    font-weight: 500;
+    padding: 12px 4px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card); color: var(--text); font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+    text-align: center; transition: all 0.2s; font-weight: 500;
   }
-
   .crew-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .crew-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-    font-weight: 700;
-  }
+  .crew-btn.active { background: var(--accent); border-color: var(--accent); color: white; font-weight: 700; }
 
-  /* 멤버 카드 */
   .member-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
 
   .member-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    transition: border-color 0.2s;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px; transition: border-color 0.2s;
   }
-
   .member-card.attend { border-color: var(--green); }
   .member-card.absent { border-color: var(--red); }
   .member-card.late   { border-color: var(--orange); }
 
-  .member-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .member-name {
-    font-size: 15px;
-    font-weight: 600;
-    min-width: 60px;
-  }
-
-  .status-btns {
-    display: flex;
-    gap: 6px;
-  }
+  .member-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .member-name { font-size: 15px; font-weight: 600; min-width: 60px; }
+  .status-btns { display: flex; gap: 6px; }
 
   .status-btn {
-    padding: 5px 13px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-size: 12px;
-    font-family: 'Noto Sans KR', sans-serif;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
+    padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-size: 12px;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
-
   .status-btn.sel-attend { background: var(--green); border-color: var(--green); color: white; font-weight: 700; }
   .status-btn.sel-absent { background: var(--red);   border-color: var(--red);   color: white; font-weight: 700; }
   .status-btn.sel-late   { background: var(--orange);border-color: var(--orange);color: white; font-weight: 700; }
 
-  .reason-box {
-    margin-top: 10px;
-    display: none;
-  }
-
+  .reason-box { margin-top: 10px; display: none; }
   .reason-box.show { display: block; }
 
   .reason-input {
-    width: 100%;
-    padding: 9px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--card2);
-    color: var(--text);
-    font-size: 13px;
-    font-family: 'Noto Sans KR', sans-serif;
-    outline: none;
-    transition: border-color 0.2s;
+    width: 100%; padding: 9px 12px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--card2);
+    color: var(--text); font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+    outline: none; transition: border-color 0.2s;
   }
-
   .reason-input:focus { border-color: var(--accent); }
   .reason-input::placeholder { color: var(--muted); }
 
-  /* 제출 버튼 */
-  .submit-wrap {
-    margin-top: 28px;
-    padding-bottom: 20px;
-  }
+  .submit-wrap { margin-top: 28px; padding-bottom: 20px; }
 
   .submit-btn {
-    width: 100%;
-    padding: 16px;
-    border-radius: var(--radius);
-    border: none;
+    width: 100%; padding: 16px; border-radius: var(--radius); border: none;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white;
-    font-size: 16px;
-    font-weight: 700;
-    font-family: 'Noto Sans KR', sans-serif;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-    letter-spacing: -0.3px;
+    color: white; font-size: 16px; font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s; letter-spacing: -0.3px;
   }
-
   .submit-btn:hover { opacity: 0.9; }
   .submit-btn:active { transform: scale(0.98); }
   .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* 완료 화면 */
-  .done-screen {
-    display: none;
-    text-align: center;
-    padding: 60px 20px;
-  }
+  .done-screen { display: none; padding: 40px 0 20px; }
+  .done-header { text-align: center; margin-bottom: 24px; }
+  .done-icon { font-size: 56px; margin-bottom: 16px; }
+  .done-screen h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .done-screen .done-sub { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-  .done-icon {
-    font-size: 56px;
-    margin-bottom: 16px;
-  }
-
-  .done-screen h2 {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  .done-screen p {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  .reset-btn {
-    margin-top: 28px;
-    padding: 12px 28px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
+  /* 제출 내용 미리보기 */
+  .result-box {
     background: var(--card);
-    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .result-box-title {
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .result-item {
+    display: flex; align-items: baseline;
+    gap: 8px; padding: 5px 0;
+    border-bottom: 1px solid var(--border);
     font-size: 14px;
-    font-family: 'Noto Sans KR', sans-serif;
-    cursor: pointer;
+  }
+  .result-item:last-child { border-bottom: none; }
+  .result-name { font-weight: 600; min-width: 60px; }
+  .result-role { font-size: 11px; color: var(--accent); font-weight: 600; }
+  .result-role.staff { color: var(--accent2); }
+  .result-status { font-size: 12px; font-weight: 700; }
+  .result-status.attend { color: var(--green); }
+  .result-status.absent { color: var(--red); }
+  .result-status.late   { color: var(--orange); }
+  .result-status.none   { color: var(--muted); }
+  .result-reason { font-size: 12px; color: var(--muted); }
+
+  /* 복사 버튼 */
+  .copy-btn {
+    width: 100%; padding: 14px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: var(--card2);
+    color: var(--text); font-size: 15px; font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { background: var(--green); border-color: var(--green); color: white; }
+
+  .done-footer {
+    text-align: center; margin-top: 16px;
+    color: var(--muted); font-size: 13px;
   }
 
-  /* 로딩 */
   .loading { opacity: 0.5; pointer-events: none; }
 
   .spinner {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    vertical-align: middle;
-    margin-right: 8px;
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 8px;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 600;
-    margin-left: 6px;
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 600; margin-left: 6px;
   }
-
   .badge-manager { background: rgba(79,142,247,0.15); color: var(--accent); }
   .badge-staff   { background: rgba(124,58,237,0.15); color: var(--accent2); }
 
-  .empty-msg {
-    text-align: center;
-    color: var(--muted);
-    font-size: 14px;
-    padding: 40px 0;
-  }
-
   .progress-bar {
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 12px 0 0;
-    overflow: hidden;
+    height: 3px; background: var(--border); border-radius: 2px; margin: 12px 0 0; overflow: hidden;
   }
-
   .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 2px;
-    transition: width 0.3s;
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px; transition: width 0.3s;
   }
 </style>
 </head>
@@ -325,24 +211,20 @@
   <p id="header-sub">주차와 크루를 선택해주세요</p>
 </header>
 
-<!-- 주차 선택 -->
 <div class="week-bar" id="week-bar"></div>
 
 <div class="container">
 
-  <!-- 크루 선택 -->
   <div class="section-title">크루 선택</div>
   <div id="loading-msg" style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">
     <span class="spinner" style="display:inline-block"></span> 명단 불러오는 중...
   </div>
   <div class="crew-grid" id="crew-grid"></div>
 
-  <!-- 멤버 리스트 -->
   <div id="member-section" style="display:none">
     <div class="section-title" id="member-section-title">멤버 참석 현황</div>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
     <div class="member-list" id="member-list"></div>
-
     <div class="submit-wrap">
       <button class="submit-btn" id="submit-btn" onclick="submitData()">제출하기</button>
     </div>
@@ -350,40 +232,55 @@
 
   <!-- 완료 화면 -->
   <div class="done-screen" id="done-screen">
-    <div class="done-icon">✅</div>
-    <h2>제출 완료!</h2>
-    <p id="done-msg">구글 시트에 자동으로 저장되었습니다.</p>
-    <p style="color:var(--muted);font-size:13px;margin-top:12px;">다시 제출하려면 페이지를 새로고침 해주세요 🔄</p>
+    <div class="done-header">
+      <div class="done-icon">✅</div>
+      <h2>제출 완료!</h2>
+      <p class="done-sub" id="done-msg">구글 시트에 저장되었습니다.</p>
+    </div>
+
+    <!-- 제출 내용 미리보기 -->
+    <div class="result-box">
+      <div class="result-box-title">📋 제출한 내용</div>
+      <div id="result-list"></div>
+    </div>
+
+    <!-- 복사 버튼 -->
+    <button class="copy-btn" id="copy-btn" onclick="copyResult()">
+      <span>📋</span><span>텍스트 복사</span>
+    </button>
+
+    <div class="done-footer">다시 제출하려면 페이지를 새로고침 해주세요 🔄</div>
   </div>
 
 </div>
 
 <script>
-// ================================================================
-// ⚙️ 설정 - SCRIPT_URL만 수정하세요! 이름은 구글 시트에서 관리
-// ================================================================
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLdtu4ny6LQY520VK135mT1sYgCEC9idJu8CQaWBOfr7dgszODDCCsd-2nV9UQezZr/exec";
 const WEEKS = ["1주차","2주차","3주차","4주차","5주차","6주차","7주차","8주차","9주차","10주차"];
-// ================================================================
 
 let selectedWeek = "";
 let selectedCrew = "";
 let memberStatuses = {};
-let CREWS = {}; // 구글 시트에서 불러옴
+let CREWS = {};
+let _resultText = "";
 
-
-// ── 앱 초기화: 명단 먼저 로드 ──
 async function init() {
   showLoading(true);
   try {
-    const res = await fetch(SCRIPT_URL + "?action=getMembers");
+    if (!SCRIPT_URL || SCRIPT_URL.includes("여기에")) throw new Error("SCRIPT_URL을 설정해주세요");
+    const res = await fetch(SCRIPT_URL + "?action=getMembers", { cache: "no-cache" });
+    if (!res.ok) throw new Error("서버 응답 오류: " + res.status);
     const data = await res.json();
-    CREWS = data.crews; // { "1크루": [{name, isManager}, ...], ... }
+    if (!data.crews) throw new Error("명단 데이터 없음");
+    CREWS = data.crews;
     initWeeks();
     initCrews();
   } catch (err) {
+    console.error("명단 로드 실패:", err);
+    document.getElementById("loading-msg").style.display = "none";
     document.getElementById("crew-grid").innerHTML =
-      '<p style="color:#ef4444;font-size:13px;padding:10px;">명단을 불러오지 못했어요.<br>SCRIPT_URL을 확인해주세요.</p>';
+      '<p style="color:#ef4444;font-size:13px;padding:10px;">⚠️ 명단을 불러오지 못했어요.<br>' + err.message +
+      '<br><button onclick="init()" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;">다시 시도</button></p>';
   }
   showLoading(false);
 }
@@ -445,7 +342,6 @@ function renderMembers(crew) {
   section.style.display = "block";
   list.innerHTML = "";
   document.getElementById("done-screen").style.display = "none";
-
   (CREWS[crew] || []).forEach(m => {
     memberStatuses[m.name] = { status: "", reason: "" };
     list.appendChild(createMemberCard(m));
@@ -458,7 +354,7 @@ function createMemberCard(member) {
   card.className = "member-card";
   card.id = `card-${member.name}`;
   const badge = member.isManager ? `<span class="badge badge-manager">간사</span>`
-             : member.isStaff ? `<span class="badge badge-staff">스태프</span>` : "";
+              : member.isStaff   ? `<span class="badge badge-staff">스태프</span>` : "";
   card.innerHTML = `
     <div class="member-top">
       <div class="member-name">${member.name}${badge}</div>
@@ -479,9 +375,7 @@ function setStatus(name, status, btn) {
   const isSame = memberStatuses[name].status === status;
   const card = document.getElementById(`card-${name}`);
   const reasonBox = document.getElementById(`reason-${name}`);
-
   if (isSame) {
-    // 같은 버튼 다시 누르면 취소
     memberStatuses[name].status = "";
     memberStatuses[name].reason = "";
     card.className = "member-card";
@@ -541,11 +435,87 @@ async function submitData() {
     document.getElementById("done-screen").style.display = "block";
     document.getElementById("done-msg").textContent =
       `${selectedWeek} ${selectedCrew} 참석 현황이 구글 시트에 저장되었습니다.`;
+    renderResult(rows);
+    window.scrollTo(0, 0);
   } catch (err) {
     alert("오류가 발생했어요. 다시 시도해주세요.");
     btn.disabled = false;
     btn.innerHTML = "제출하기";
   }
+}
+
+// ── 제출 내용 렌더링 ──
+function renderResult(rows) {
+  const members = CREWS[selectedCrew] || [];
+  const statusMap = {};
+  rows.forEach(r => { statusMap[r.name] = r; });
+
+  const statusKo  = { "참석": "참석", "불참": "불참", "늦참": "늦참", "": "미정" };
+  const statusEmoji = { "참석": "✅", "불참": "❌", "늦참": "⏰", "": "❓" };
+  const statusCls   = { "참석": "attend", "불참": "absent", "늦참": "late", "": "none" };
+
+  const list = document.getElementById("result-list");
+  list.innerHTML = "";
+
+  const textLines = [`[${selectedWeek} ${selectedCrew}]`, ""];
+
+  members.forEach(m => {
+    const s = statusMap[m.name] || {};
+    const status = s.status || "";
+    const reason = s.reason || "";
+    const roleLabel = m.isManager ? "간사" : m.isStaff ? "스태프" : "";
+    const roleCls   = m.isManager ? "" : "staff";
+
+    // UI 카드
+    const item = document.createElement("div");
+    item.className = "result-item";
+    item.innerHTML = `
+      <span class="result-status ${statusCls[status]}">${statusEmoji[status]}</span>
+      <span class="result-name">${m.name}</span>
+      ${roleLabel ? `<span class="result-role ${roleCls}">${roleLabel}</span>` : ""}
+      <span class="result-status ${statusCls[status]}">${statusKo[status]}</span>
+      ${reason ? `<span class="result-reason">(${reason})</span>` : ""}
+    `;
+    list.appendChild(item);
+
+    // 텍스트 (복사용)
+    const roleStr   = roleLabel ? `[${roleLabel}] ` : "";
+    const reasonStr = reason ? ` (${reason})` : "";
+    textLines.push(`${statusEmoji[status]} ${roleStr}${m.name} - ${statusKo[status]}${reasonStr}`);
+  });
+
+  _resultText = textLines.join("\n");
+}
+
+// ── 텍스트 복사 ──
+function copyResult() {
+  if (!_resultText) return;
+  const copyBtn = document.getElementById("copy-btn");
+
+  const doSuccess = () => {
+    copyBtn.classList.add("copied");
+    copyBtn.innerHTML = "<span>✅</span><span>복사됐어요!</span>";
+    setTimeout(() => {
+      copyBtn.classList.remove("copied");
+      copyBtn.innerHTML = "<span>📋</span><span>텍스트 복사</span>";
+    }, 2500);
+  };
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(_resultText).then(doSuccess).catch(() => fallbackCopy(doSuccess));
+  } else {
+    fallbackCopy(doSuccess);
+  }
+}
+
+function fallbackCopy(cb) {
+  const ta = document.createElement("textarea");
+  ta.value = _resultText;
+  ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand("copy"); cb(); } catch(e) { alert("복사에 실패했어요. 직접 선택해서 복사해주세요."); }
+  document.body.removeChild(ta);
 }
 
 init();
