@@ -247,7 +247,7 @@
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpAd6L48h6qScM30zSIfaldizkajmblMIi5EPIlPq4G6kQEPdW1ldg1KM0zh9Q-bmY/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKA4idCaU_F0wjeGP3XJe9AvnmnKVFDNpUgV5eIET2c6Z3OSPkw52lvZTPDVBocRa_/exec";
 const WEEKS = ["1주차","2주차","3주차","4주차","5주차","6주차","7주차","8주차","9주차","10주차"];
 
 let CREWS = {};         // 명단 (한번만 로드)
@@ -404,12 +404,26 @@ function selectWeek(week) {
   updateHeader();
 }
 
-function selectCrew(crew) {
+async function selectCrew(crew) {
   if (!selectedWeek) { alert("먼저 주차를 선택해주세요!"); return; }
   selectedCrew = crew;
   memberStatuses = {};
   document.querySelectorAll(".crew-btn").forEach(b => b.classList.toggle("active", b.textContent === crew));
-  renderMembers(crew);
+
+  // 기존 제출 데이터 불러오기
+  let prevData = {};
+  try {
+    const url = `${SCRIPT_URL}?action=getSubmitted&type=${encodeURIComponent(selectedType)}&week=${encodeURIComponent(selectedWeek)}&crew=${encodeURIComponent(crew)}`;
+    const res = await fetch(url, { cache: "no-cache" });
+    const json = await res.json();
+    if (json.rows && json.rows.length > 0) {
+      json.rows.forEach(r => { prevData[r.name] = { status: r.status, reason: r.reason }; });
+    }
+  } catch(e) {
+    console.warn("기존 데이터 로드 실패:", e);
+  }
+
+  renderMembers(crew, prevData);
   updateHeader();
 }
 
@@ -422,46 +436,60 @@ function updateHeader() {
   else sub.textContent = "설문 유형을 선택해주세요";
 }
 
-function renderMembers(crew) {
+function renderMembers(crew, prevData = {}) {
   const traineeOnly = (selectedType === "예배" || selectedType === "보강");
   const allMembers = CREWS[crew] || [];
-
-  // 예배/보강은 훈련생만 표시
   const members = traineeOnly
     ? allMembers.filter(m => !m.isManager && !m.isStaff)
     : allMembers;
 
-  document.getElementById("member-section-title").textContent = `${crew} 멤버 참석 현황`;
+  const hasPrev = Object.keys(prevData).length > 0;
+  const titleEl = document.getElementById("member-section-title");
+  titleEl.innerHTML = `${crew} 멤버 참석 현황`
+    + (hasPrev ? ` <span style="font-size:11px;color:var(--orange);font-weight:600;margin-left:6px;">✏️ 이전 제출 불러옴</span>` : "");
+
   document.getElementById("member-section").style.display = "block";
   document.getElementById("done-screen").style.display = "none";
 
   const list = document.getElementById("member-list");
   list.innerHTML = "";
   members.forEach(m => {
-    memberStatuses[m.name] = { status: "", reason: "" };
-    list.appendChild(createMemberCard(m, traineeOnly));
+    const prev = prevData[m.name] || { status: "", reason: "" };
+    // status를 내부 코드로 변환 (서버는 한글, 내부는 attend/absent/late)
+    const statusCode = prev.status === "참석" ? "attend"
+                     : prev.status === "불참" ? "absent"
+                     : prev.status === "부분참" ? "late" : "";
+    memberStatuses[m.name] = { status: statusCode, reason: prev.reason };
+    list.appendChild(createMemberCard(m, traineeOnly, statusCode, prev.reason));
   });
   updateProgress();
 }
 
-function createMemberCard(member, traineeOnly) {
+function createMemberCard(member, traineeOnly, initStatus = "", initReason = "") {
   const card = document.createElement("div");
-  card.className = "member-card";
   card.id = `card-${member.name}`;
-  // 예배/보강은 배지 표시 안함 (훈련생만이므로)
+  card.className = "member-card" + (initStatus ? " " + initStatus : "");
+
   const badge = !traineeOnly && member.isManager ? `<span class="badge badge-manager">간사</span>`
               : !traineeOnly && member.isStaff   ? `<span class="badge badge-staff">스태프</span>` : "";
+
+  const btnCls = (s) => initStatus === s ? `status-btn sel-${s}` : "status-btn";
+  const showReason = (initStatus === "absent" || initStatus === "late") ? "show" : "";
+  const placeholder = initStatus === "absent" ? "불참 사유를 입력해주세요" : "시간 입력 (예: 18:30 도착 / 20:00 퇴장)";
+
   card.innerHTML = `
     <div class="member-top">
       <div class="member-name">${member.name}${badge}</div>
       <div class="status-btns">
-        <button class="status-btn" onclick="setStatus('${member.name}', 'attend', this)">참석</button>
-        <button class="status-btn" onclick="setStatus('${member.name}', 'absent', this)">불참</button>
-        <button class="status-btn" onclick="setStatus('${member.name}', 'late', this)">부분참</button>
+        <button class="${btnCls('attend')}" onclick="setStatus('${member.name}', 'attend', this)">참석</button>
+        <button class="${btnCls('absent')}" onclick="setStatus('${member.name}', 'absent', this)">불참</button>
+        <button class="${btnCls('late')}"   onclick="setStatus('${member.name}', 'late', this)">부분참</button>
       </div>
     </div>
-    <div class="reason-box" id="reason-${member.name}">
+    <div class="reason-box ${showReason}" id="reason-${member.name}">
       <input class="reason-input" id="input-${member.name}" type="text"
+        value="${initReason}"
+        placeholder="${placeholder}"
         oninput="setReason('${member.name}', this.value)">
     </div>`;
   return card;
