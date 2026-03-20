@@ -330,16 +330,6 @@
 
 <div class="container">
 
-  <!-- 기수 입력 -->
-  <div class="section-title">기수 입력</div>
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-    <input id="kisu-input" type="text" class="reason-input"
-      placeholder="예) 6기"
-      style="width:120px;font-size:15px;font-weight:600;"
-      oninput="document.getElementById('kisu-display').textContent = this.value || '?기'">
-    <span style="color:var(--muted);font-size:13px;">정리본에 표시될 기수예요</span>
-  </div>
-
   <!-- 크루 선택 -->
   <div class="section-title">크루 선택</div>
   <div id="loading-msg" style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">
@@ -372,7 +362,7 @@
 // ================================================================
 // ⚙️ 설정 - SCRIPT_URL만 수정하세요! 이름은 구글 시트에서 관리
 // ================================================================
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbhcMiDhTP3TzEWPjUIDt76fxXpSbX7tJHheDH3li0yu8tUuzIXj8MH77nIntZPDoJ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydIUdnJKXjK-SlL98hpy8SGEL1fhR5WqCL72FTBLWVnRmlNi2RSiAVacVRSJjjOIvw/exec";
 const WEEKS = ["1주차","2주차","3주차","4주차","5주차","6주차","7주차","8주차","9주차","10주차"];
 // ================================================================
 
@@ -381,9 +371,6 @@ let selectedCrew = "";
 let memberStatuses = {};
 let CREWS = {}; // 구글 시트에서 불러옴
 
-function getKisu() {
-  return document.getElementById("kisu-input").value.trim() || "?기";
-}
 
 // ── 앱 초기화: 명단 먼저 로드 ──
 async function init() {
@@ -489,19 +476,31 @@ function createMemberCard(member) {
 }
 
 function setStatus(name, status, btn) {
-  memberStatuses[name].status = status;
+  const isSame = memberStatuses[name].status === status;
   const card = document.getElementById(`card-${name}`);
-  card.className = `member-card ${status}`;
-  btn.parentElement.querySelectorAll(".status-btn").forEach(b => b.className = "status-btn");
-  btn.classList.add(`sel-${status}`);
   const reasonBox = document.getElementById(`reason-${name}`);
-  if (status === "absent" || status === "late") {
-    reasonBox.classList.add("show");
-    document.getElementById(`input-${name}`).placeholder =
-      status === "absent" ? "불참 사유를 입력해주세요" : "도착 예정 시간을 입력해주세요";
-  } else {
-    reasonBox.classList.remove("show");
+
+  if (isSame) {
+    // 같은 버튼 다시 누르면 취소
+    memberStatuses[name].status = "";
     memberStatuses[name].reason = "";
+    card.className = "member-card";
+    btn.className = "status-btn";
+    reasonBox.classList.remove("show");
+    document.getElementById(`input-${name}`).value = "";
+  } else {
+    memberStatuses[name].status = status;
+    card.className = `member-card ${status}`;
+    btn.parentElement.querySelectorAll(".status-btn").forEach(b => b.className = "status-btn");
+    btn.classList.add(`sel-${status}`);
+    if (status === "absent" || status === "late") {
+      reasonBox.classList.add("show");
+      document.getElementById(`input-${name}`).placeholder =
+        status === "absent" ? "불참 사유를 입력해주세요" : "도착 예정 시간 입력 (예: 18:30)";
+    } else {
+      reasonBox.classList.remove("show");
+      memberStatuses[name].reason = "";
+    }
   }
   updateProgress();
 }
@@ -536,7 +535,7 @@ async function submitData() {
     await fetch(SCRIPT_URL, {
       method: "POST", mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crew: selectedCrew, week: selectedWeek, rows, kisu: getKisu() })
+      body: JSON.stringify({ crew: selectedCrew, week: selectedWeek, rows })
     });
     document.getElementById("member-section").style.display = "none";
     document.getElementById("done-screen").style.display = "block";
