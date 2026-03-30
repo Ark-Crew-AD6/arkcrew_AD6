@@ -289,21 +289,21 @@ function writeReport(ss, type, week) {
   if (traineeOnly) {
     rSheet.getRange(r, 1).setValue("-훈련생").setFontWeight("bold"); r++;
     rSheet.getRange(r, 1).setValue("참석: " + attendTr + "명").setBackground("#d1fae5"); r++;
-    rSheet.getRange(r, 1).setValue("불참: " + absentTr + "명").setBackground("#fee2e2"); r++;
     rSheet.getRange(r, 1).setValue("부분참: " + lateTr   + "명").setBackground("#fef3c7"); r++;
     rSheet.getRange(r, 1).setValue("미정: " + undecidedTr + "명").setBackground("#f3f4f6"); r++;
+    rSheet.getRange(r, 1).setValue("불참: " + absentTr + "명").setBackground("#fee2e2"); r++;
   } else if (hasStaff) {
     rSheet.getRange(r, 1).setValue("-간사 / 스태프 / 훈련생 / 전체").setFontWeight("bold"); r++;
     rSheet.getRange(r, 1).setValue("참석: " + attendMgr + " / " + attendStaff + " / " + attendTr + " / " + (attendMgr+attendStaff+attendTr) + "명").setBackground("#d1fae5"); r++;
-    rSheet.getRange(r, 1).setValue("불참: " + absentMgr + " / " + absentStaff + " / " + absentTr + " / " + (absentMgr+absentStaff+absentTr) + "명").setBackground("#fee2e2"); r++;
     rSheet.getRange(r, 1).setValue("부분참: " + lateMgr   + " / " + lateStaff   + " / " + lateTr   + " / " + (lateMgr+lateStaff+lateTr)     + "명").setBackground("#fef3c7"); r++;
     rSheet.getRange(r, 1).setValue("미정: " + undecidedMgr + " / " + undecidedStaff + " / " + undecidedTr + " / " + (undecidedMgr+undecidedStaff+undecidedTr) + "명").setBackground("#f3f4f6"); r++;
+    rSheet.getRange(r, 1).setValue("불참: " + absentMgr + " / " + absentStaff + " / " + absentTr + " / " + (absentMgr+absentStaff+absentTr) + "명").setBackground("#fee2e2"); r++;
   } else {
     rSheet.getRange(r, 1).setValue("-간사 / 훈련생 / 전체").setFontWeight("bold"); r++;
     rSheet.getRange(r, 1).setValue("참석: " + attendMgr + " / " + attendTr + " / " + (attendMgr+attendTr) + "명").setBackground("#d1fae5"); r++;
-    rSheet.getRange(r, 1).setValue("불참: " + absentMgr + " / " + absentTr + " / " + (absentMgr+absentTr) + "명").setBackground("#fee2e2"); r++;
     rSheet.getRange(r, 1).setValue("부분참: " + lateMgr   + " / " + lateTr   + " / " + (lateMgr+lateTr)    + "명").setBackground("#fef3c7"); r++;
     rSheet.getRange(r, 1).setValue("미정: " + undecidedMgr + " / " + undecidedTr + " / " + (undecidedMgr+undecidedTr) + "명").setBackground("#f3f4f6"); r++;
+    rSheet.getRange(r, 1).setValue("불참: " + absentMgr + " / " + absentTr + " / " + (absentMgr+absentTr) + "명").setBackground("#fee2e2"); r++;
   }
   r++;
 
